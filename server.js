@@ -1,89 +1,48 @@
 const express = require('express');
-const server = express();
+const app = express();
 
 const weather = require('./data/weather.json');
 
 const cors = require('cors');
-const { response } = require('express');
-server.use(cors()); 
+app.use(cors());
+
+require("dotenv").config();
+const PORT = process.env.PORT;
+
+app.get('/', (req, res) => { res.send("hello world") })
 
 
-const PORT = process.env.PORT || 3030;
- require("dotenv").config();
+app.get('/weather', (req, res) => {
+    let lat = req.query.lat
+    let lon = req.query.lon
+    let searchQuery = req.query.lat
+    console.log(lat, lon, searchQuery);
 
-
- server.get('/',(req,res) =>{
-    res.send('Home...');
-})
-
-
-server.get('/test',(req, res)=>{
-  res.send('hello');
-})
-
-
-server.get('/weatherData', (req, res)=>{
-    res.send(weather);
-})
-
-
-server.get('/lon-lat', (req, res)=>{
-    let dataArr =weather.map((city)=> {
-        return [`longitude: ${city.lon}` , `latitude: ${city.lat}`];
-    }) 
-    res.send(dataArr);
-})
-
-
-server.get('', (req, res)=>{
-    let cityName = req.query.cityName;
-    console.log(cityName);
-
-    let cityFound = weather.find((city)=>{
-        let name = city.city_name;
-   
-        if (name.toLocaleLowerCase() == cityName.toLocaleLowerCase()){
-   
-        return city;}   
+    let foreCastData=weather.map((item,i)=>{
+        return new ForeCast(item.data)
     })
-    console.log(cityFound);
-    if(cityFound){
-        res.status = 200;
-        res.send(`City: ${cityFound.city_name}  -  Longitude: ${cityFound.lon}  -  Latitude: ${cityFound.lat}`);
-    }else if (! cityFound){
-        res.status =500;
-        res.send(`ERROR: DATA NOT FOUND FOR REQUIRED REGION`);
-    }
+    res.json(
+      
+        weather.find((item, i) => {
+            if (item.city_name === searchQuery)
+              
+        }else {
+            return { massage :"not found"}
+        }
+        )
 })
 
-
-server.get('/cityData', (req, res)=>{
-  let cityName = req.query.cityName;
-  let cityValidation = weather.find((city)=>{
-      return (city.city_name.toLocaleLowerCase() == cityName.toLocaleLowerCase());
-  })
-
-
-  if (cityValidation){
-
-    let cityData = cityValidation.data.map(day => new Forecast(day));
-    console.log(cityData);
-      res.status=200;
-      res.send(cityData);
-  }
-  else{
-    res.status =500;
-    res.send(`ERROR: DATA NOT FOUND FOR REQUIRED REGION`);
-  }
-})
-
-
-
-class Forecast{
-    constructor(city){
-        this.date= city.valid_date,
-        this.description= city.weather.description
+class ForeCast {
+    constructor(weatherData) {
+        this.date = weatherData.valid_date
+        this.description = weatherData.weather.description
     }
+
 }
 
-server.listen(8000);
+
+
+
+server.listen(PORT, () => {
+    console.log(`starting at port ${PORT} `);
+});
