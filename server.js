@@ -5,14 +5,14 @@ const weather = require('./data/weather.json');
 require("dotenv").config();
 const cors = require('cors');
 app.use(cors());
-
+const PORT = process.env.PORT; 
 app.get('/', (req, res) => { res.send("hello world") })
 
 
 app.get('/weather', (req, res) => {
     let lat = req.query.lat
     let lon = req.query.lon
-    let searchQuery = req.query.lat
+    let searchQuery = req.query.searchQuery
  
     try {
         let findData = () => {
@@ -26,7 +26,7 @@ app.get('/weather', (req, res) => {
         res.json(findData());
     } catch (error) {
         res.status(500)
-        res.json({ message: "something wrong", error: error })
+        res.json({ message: "something wrong", error: "500" })
     }
 });
 
@@ -38,10 +38,6 @@ app.get('/weather', (req, res) => {
         }
 
     }
-
-
-
-
    app.listen(PORT, () => {
         console.log(`starting at port ${PORT} `);
-    });
+   });
