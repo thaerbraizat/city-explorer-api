@@ -5,9 +5,10 @@
 
 ## Overview
 This is an api server for my city explorer app. getting the weather  for the searched region.
+and it's a search about all movies based on city name.
 
 ## Getting Started
-Enter the name of the city or region you want to display the map for, and then click on Explore.
+Enter the name of the city or region you want to display the map and weather for 16 days and all movies have cityname , and then click on Explore.
 
 ## Architecture
 This is build as a server using node js and express.
