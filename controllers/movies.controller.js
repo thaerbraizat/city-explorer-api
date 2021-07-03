@@ -15,7 +15,8 @@ const moviesController = (req, res) => {
     let query = req.query.originaltitle;
     let arrMovies = [];
     if (query) {
-        if (cache.data.length > 0) {
+        if ((cache.data.length > 0 && cache.name===query ) && Math.abs(cache.lastMod- new Date()) <=10000 ) {
+            
             arrMovies = cache.data.map(data => new Movies(data))
             console.log('cache ====================');
             res.send(arrMovies)
@@ -29,6 +30,8 @@ const moviesController = (req, res) => {
                 });
                 res.json(arrMovies);
                 cache['data'] =movies;
+                cache['name'] =query;
+                cache['lastMod']=new Date();
                 console.log("api");
             }).catch(error => {
                 console.log('try');

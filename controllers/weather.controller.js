@@ -1,10 +1,10 @@
 const ForeCast = require('../models/weather.model');
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const { default: axios } = require('axios');
-const Cache = require('../utils/cache')
+const CacheWeather = require('../utils/cacheWeather')
 
-let cache = new Cache();
-cache['data'] = [];
+let cacheWeather = new CacheWeather();
+cacheWeather['data'] = [];
 
 
 const weatherController = (req, res) => {
@@ -14,8 +14,8 @@ const weatherController = (req, res) => {
 
     let arrData = [];
     if (lat && lon) {
-        if (cache.data.length > 0) {
-            arrData = cache.data.map(data => new ForeCast(data))
+        if ((cacheWeather.data.length > 0 && cacheWeather.lat===lat ) && Math.abs(cacheWeather.lastMod- new Date()) <=10000 ) {
+            arrData = cacheWeather.data.map(data => new ForeCast(data))
             console.log('cache ====================');
             res.send(arrData)
         } else {
@@ -26,8 +26,10 @@ const weatherController = (req, res) => {
                     return new ForeCast(data)
                 });
                 // console.log(weather);
-                cache['data'] = weather.data;
-                console.log(cache);
+                cacheWeather['data'] = weather.data;
+                cacheWeather['lat'] =lat;
+                cacheWeather['lastMod']=new Date();
+                console.log(cacheWeather);
                 console.log('api======================');
                 res.json(arrData);
                 if (arrData === 0) {
